@@ -46,6 +46,7 @@
 \newcommand{\pure}{\tpure\,}
 \newcommand{\law}[1]{\ensuremath{\mbox{\textbf{#1}}}}
 \newcommand{\tApplicative}{\ensuremath{\mathsf{Applicative}}}
+\newcommand{\Applicative}{\tApplicative\,}
 \newcommand{\idapp}{⊛}
 \newcommand{\ulaw}[1]{\ensuremath{\mbox{\textit{#1}}}}
 
@@ -76,7 +77,7 @@
 \section{Introduction}
 
 \citet{mcBridePaterson:jfp08} introduce applicative functors as a
-Haskell type constructor class $\Applicative~F$ with two methods
+Haskell type constructor class $\Applicative F$ with two methods
 \[
 \begin{array}{llll}
   \tpure & : & A \to F\,A
@@ -345,6 +346,7 @@ As a consequence of \Cref{lem:frame}, we only need to show the composition law f
 \]
 We first show the case $n=0$:
 \begin{lemma}[Composition for $n=0$]
+\label{lem:compnzero}
 \[
   \liftA[1]\,f\,(\liftA[k]\,g\,\vec v) = \liftA[k]\,(f \compose[k]0 g)\,\vec v
 \]
@@ -355,8 +357,8 @@ By induction on $k$.
 \nextcase $k=0$: This is \ulaw{homomorphism}.
 \nextcase $k \to k+1$.
 \[
-\begin{array}{lllll@{\qquad}l}
-\multicolumn 6 l {
+\begin{array}{lll@{\qquad}l}
+\multicolumn 4 l {
   \liftA[1]\,f\,(\liftA[k+1]\,g\,\vec v\,w)
 }\\
     & = & \pure f \idapp (\liftA[k]\,g\,\vec v \idapp w)
@@ -365,11 +367,9 @@ By induction on $k$.
     & \mbox{by \ulaw{composition}}
 \\
     & = & \pure (f \circ \_) \idapp \liftA[k]\,g\,\vec v \idapp w
-    &&
     & \mbox{by \ulaw{homomorphism}}
 \\
     & = & \liftA[k]\,((f \circ \_) \compose[k]0 g)\,\vec v \idapp w
-    &&
     & \mbox{by ind.hyp.}
 \\
     & = & \liftA[k+1]\,(f \compose[k+1]0 g)\,\vec v\, w
@@ -388,6 +388,7 @@ For the last step, note that
 \end{proof*}
 
 \begin{corollary}[Composition for $k=0$]
+\label{cor:compkzero}
 \[
   \liftA[n+1]\,f\,\vec u\,(\pure x)
   = \liftA[n]\,(f \compose[0]n x)\,\vec u
@@ -417,58 +418,107 @@ The last step is justified by
 \qed
 \end{proof*}
 
-\begin{lemma}[Composition for $n=k=0$]
-\label{lem:comp}
-\(
-  \liftA[1+m]\,f\,(\pure x)\,\vec w = \liftA[m]\,(f\,x)\,\vec w
-  .
-\)
-\end{lemma}
-\begin{proof*}
-By induction on $m$:
-\begin{caselist}
-\nextcase $m=0$:  This is the \ulaw{homomorphism} law.
+
+\begin{theorem}[Composition]
+  \label{thm:comp}
 \[
-\begin{array}{lllllll}
-  \liftA[1]\,f\,(\pure x)
-    & = & \pure f \idapp \pure x
-    & = & \pure\,(f x)
-    & = & \liftA[0]\,(f\,x)
-\end{array}
+  \liftA[n+1]\,f\,\vec u^n\,(\liftA[k]\,g\,\vec v^k)
+  =
+  \liftA[n+k]\,(f \compose[k]n g)\,\vec u\, \vec v
 \]
-\nextcase $m \to m+1$:
+\end{theorem}
+\begin{proof}
+By induction on $k$.
+\begin{caselist}
+
+\nextcase $k=0$: This is \Cref{cor:compkzero}.
+
+\nextcase $k \to k+1$:
 \[
 \begin{array}{lll@{\qquad}l}
-%\multicolumn 5 l {
-  \liftA[1+m+1]\,f\,(\pure x)\,\vec w\,w
-%}
-%\\
-    & = & \liftA[1+m]\,f\,(\pure x)\,\vec w \idapp w
+\multicolumn 4 l {
+  \liftA[n+1]\,f\,\vec u^n\,(\liftA[k+1]\,g\,\vec v^k\,w)
+}\\
+  & = & \liftA[n]\,f\,\vec u \idapp (\liftA[k]\,g\,\vec v \idapp w)
 \\
-    & = & \liftA[m]\,(f\,x)\,\vec w \idapp w
-    & \mbox{by ind.hyp.}
+  & = & \pure (\_{\circ}\_) \idapp \liftA[n]\,f\,\vec u \idapp \liftA[k]\,g\,\vec v \idapp w
+  & \mbox{by \ulaw{composition}}
 \\
-    & = & \liftA[m+1]\,(f\,x)\,\vec w\, w
+  & = & \liftA[n]\,((\_{\circ}\_) \compose[n]0 f) \,\vec u \idapp \liftA[k]\,g\,\vec v \idapp w
+  & \mbox{by \Cref{lem:compnzero}}
+\\
+  & = & \liftA[n+k]\,(((\_{\circ}\_) \compose[n]0 f) \compose[k]n g) \,\vec u \,\vec v \idapp w
+  & \mbox{by ind.hyp.}
+\\
+  & = &
+   \liftA[n+k+1]\,(f \compose[k+1]n g)\,\vec u\, \vec v\, w
 \end{array}
 \]
-\qed
+For the last step, we calculate
+\(
+  ((\_{\circ}\_) \compose[n]0 f) \compose[k]n g
+  = \lambda \vec x^n \vec y^k \to (\lambda \vec x^n \to (f \vec x) \circ \_))\,\vec x\, (g\,\vec y)
+  = \lambda \vec x^n \vec y^k \to (f \vec x) \circ (g\,\vec y)
+  = \lambda \vec x^n \vec y^k z \to f \vec x \, (g\,\vec y\,z)
+  = f \compose[k+1]n g
+  .
+\)
 \end{caselist}
-\end{proof*}
+\end{proof}
 
-\begin{lemma}[Composition for $k=0$]
-\[
-  \liftA[n+1]\,f\vec u\,(\pure x)
-  = \liftA[n]\,(f \compose[0]n x)\,\vec u
-\]
-\end{lemma}
-\begin{proof*}
-By induction on $n$:
-\begin{caselist}
-\nextcase $n=0$: This is \ulaw{homomorphism}.
-\nextcase $n \to n+1$.
-\qed
-\end{caselist}
-\end{proof*}
+
+% \begin{lemma}[Composition for $n=k=0$]
+% \label{lem:comp}
+% \(
+%   \liftA[1+m]\,f\,(\pure x)\,\vec w = \liftA[m]\,(f\,x)\,\vec w
+%   .
+% \)
+% \end{lemma}
+% \begin{proof*}
+% By induction on $m$:
+% \begin{caselist}
+% \nextcase $m=0$:  This is the \ulaw{homomorphism} law.
+% \[
+% \begin{array}{lllllll}
+%   \liftA[1]\,f\,(\pure x)
+%     & = & \pure f \idapp \pure x
+%     & = & \pure\,(f x)
+%     & = & \liftA[0]\,(f\,x)
+% \end{array}
+% \]
+% \nextcase $m \to m+1$:
+% \[
+% \begin{array}{lll@{\qquad}l}
+% %\multicolumn 5 l {
+%   \liftA[1+m+1]\,f\,(\pure x)\,\vec w\,w
+% %}
+% %\\
+%     & = & \liftA[1+m]\,f\,(\pure x)\,\vec w \idapp w
+% \\
+%     & = & \liftA[m]\,(f\,x)\,\vec w \idapp w
+%     & \mbox{by ind.hyp.}
+% \\
+%     & = & \liftA[m+1]\,(f\,x)\,\vec w\, w
+% \end{array}
+% \]
+% \qed
+% \end{caselist}
+% \end{proof*}
+
+% \begin{lemma}[Composition for $k=0$]
+% \[
+%   \liftA[n+1]\,f\vec u\,(\pure x)
+%   = \liftA[n]\,(f \compose[0]n x)\,\vec u
+% \]
+% \end{lemma}
+% \begin{proof*}
+% By induction on $n$:
+% \begin{caselist}
+% \nextcase $n=0$: This is \ulaw{homomorphism}.
+% \nextcase $n \to n+1$.
+% \qed
+% \end{caselist}
+% \end{proof*}
 
 
 \section{The development}
