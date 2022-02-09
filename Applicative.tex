@@ -53,26 +53,34 @@
 
 %% Content
 
-%\newcommand{\MAIN}{Applicative}
-\newcommand{\TITLE}{%
-  An Agda Formalization of Applicative Functors
-  Presented Via \texttt{liftA}$_n$}
-\newcommand{\DATE}{17 January 2022}
-\newcommand{\ABSTRACT}{
+%\DeclareRobustCommand{\MAIN}{Applicative}
+\DeclareRobustCommand{\TITLE}{%
+  Equivalence of Applicative Functors and Multifunctors
+  % An Agda Formalization of Applicative Functors
+  % Presented Via \texttt{liftA}$_n$
+}
+\DeclareRobustCommand{\DATE}{February 2022
+%17 January 2022
+}
+\DeclareRobustCommand{\ABSTRACT}{
   McBride and Paterson \citeyearpar{mcBridePaterson:jfp08}
   introduced \texttt{Applicative} functors to
   Haskell, which are equivalent to the lax monoidal functors (with
   strength) of category theory.  Applicative functors $F$ are presented
-  via \emph{idiomatic application} $\_⊛\_ : F(A → B) → FA → FB$ and
-  laws that look ad-hoc and hard to remember.  We propose instead to
-  define applicative functors by a family $\liftA[n] : (A_1 \to \dots
+  via \emph{idiomatic application} $\_{⊛}\_ : F\,(A → B) → FA → FB$ and
+  laws that are a bit hard to remember.
+  \citet{capriottiKaposi:msfp14} observed that applicative functors
+  can be conceived as multifunctors, \ie, by a family $\liftA[n] : (A_1 \to \dots
   \to A_n \to C) \to FA_1 \to \dots \to FA_n \to FC$ of
   \texttt{zipWith}-like functions that generalize \texttt{pure} $(n=0)$,
   \texttt{fmap} $(n=1)$ and \texttt{liftA2} $(n=2)$.  This reduces the
-  associated laws to just the first functor law and one composition
+  associated laws to just the first functor law and
+  a uniform scheme of second (multi)functor laws, \ie, a composition
   law for $\liftA$.
+  In this note, we rigorously prove that applicative functors are
+  in fact equivalent to multifunctors, by interderiving their laws.
 }
-\newcommand{\INTRO}{%
+\DeclareRobustCommand{\INTRO}{%
 
 \section{Introduction}
 
@@ -80,9 +88,9 @@
 Haskell type constructor class $\Applicative F$ with two methods
 \[
 \begin{array}{llll}
-  \tpure & : & A \to F\,A
+  \tpure & : & A \to F A
     & \mbox{embedding} \\
-  \_\idapp\_ & : & F\,(A \to B) \to F\,A \to F\,B
+  \_\idapp\_ & : & F\,(A \to B) \to F A \to F B
     & \mbox{idiomatic application, left associative} \\
 \end{array}
 \]
@@ -115,7 +123,7 @@ functor law can be derived via \ulaw{composition} and
 \begin{array}{llllll}
   \fmap f (\fmap g u)
     & = & \pure f \idapp (\pure g \idapp u)
-    & = & \pure (\_\circ\_) \idapp \pure f \idapp \pure g \idapp u \\
+    & = & \pure (\_{\circ}\_) \idapp \pure f \idapp \pure g \idapp u \\
     & = & \pure (f \circ\_) \idapp \pure g \idapp u
     & = & \pure (f \circ g) \idapp u \\
     & = & \fmap {(f \circ g)} u
@@ -149,10 +157,33 @@ In the same way, we get the \emph{nullary} $\tpure = \liftA[0] : A \to
 FA$.
 
 In this note, we show that the further generalization to arbitrary
-arities $\liftA[n]$ gives very elegant laws for the familty
+arities $\liftA[n]$ gives very elegant laws for the family
 $\liftA[n]$, which are just generalizations of the two functor laws.
 
-\section{Applicative Functors as Arity-Generalized Functors}
+The infinite family $\liftA[n]$ can be truncated to $n \leq 2$,
+yielding the following composition laws in addition to the functor
+laws (for $\liftA[1]$):
+\[
+\begin{array}{lll@{\qquad}l}
+  \liftA[1]\,f\,(\liftA[0]\,x) & = & \liftA[0]\,(f\,x) & \mbox{\ulaw{homomorphism}} \\
+  \liftA[2]\,f\,(\liftA[0]\,x) & = & \liftA[1]\,(f\,x) & \mbox{\ulaw{homomorphism}} \\
+  \liftA[2]\,f\,u\,(\liftA[0]\,y) & = & \liftA[1]\,(\lambda x \to f\,x\,y)\,u
+    & \mbox{\ulaw{exchange}} \\
+  \liftA[2]\,f\,(\liftA[1]\,g\,u) & = & \liftA[2]\,(f \circ g)\,u
+    & \mbox{2nd functor law} \\
+  \liftA[2]\,f\,u\,(\liftA[1]\,h\,v) & = & \liftA[2]\,(\lambda x \to f\,x \circ h)\,u\,v \\
+  \liftA[1]\,f\,(\liftA[2]\,g\,u\,v) & = & \liftA[2]\,(\lambda x \to f \circ g\,x)\,u\,v \\
+  \liftA[2]\,f\,(\liftA[2]\,g\,u\,v)\,w & = &
+    % \liftA[3]\,(\lambda x y z \to f\,(g\,x\,y)\,z)\,u\,v\,w
+    \liftA[2]\,(\lambda x (y,z) \to f\,(g\,x\,y)\,z)\,u\,(\liftA[2]\,(\_{,}\_)\,v\,w) \\
+  \liftA[2]\,f\,u\,(\liftA[2]\,g\,v\,w) & = &
+    % \liftA[3]\,(\lambda x y z \to f\,x\,(g\,y\,z))\,u\,v\,w
+    \liftA[2]\,(\lambda (x,y) \to f\,x \circ g\,y)\,(\liftA[2]\,(\_{,}\_)\,u\,v)\,w \\
+%    \liftA[2]\,(\lambda (x,y) z \to f\,x\,(g\,y\,z))\,(\liftA[2]\,(\_{,}\_)\,u\,v)\,w \\
+\end{array}
+\]
+
+\section{Applicative Functors as Multifunctors}
 
 \paradot{Preliminaries: generalized composition}
 If $f : A_{1..n} \to C \to D$ and $g : B_{1..m} \to C$ then let
@@ -172,12 +203,17 @@ Further, $(f \compose[0]n y)\,a_{1..n} = f\,a_{1..n}\,y$ is partial application 
 % $f \compose[n]{m}k g : A_{1..n} \to B_{1..m} \to C_{1..\ell} \to D$.
 % We define $(f \compose m k g)\;a_{1..n}\;b_{1..m} = f\,a_{1..n}\,(g\,b_{1..m})$.
 
-\paradot{Arity-generalized functors}
+\paradot{Multifunctors}
 To distinguish our concept of applicative functors from that of
 \citeauthor{mcBridePaterson:jfp08}, we temporarily call them
-\emph{arity-generalized functor}.
+\emph{multifunctor}.\footnote{
+  The name \emph{multi-functor} is taken from
+  \citet{capriottiKaposi:msfp14} and already motivated there as means
+  to ``naturally arrive at the definition of the $\tApplicative$ clase
+  via an obvious generalization of the notion of functor.''
+}
 
-An arity-generalized functor $F$ shall be witnessed by a family of functions
+A multifunctor $F$ shall be witnessed by a family of functions
 \[
   \liftA[n] :
     (A_1 \to \dots \to A_n \to C) \to FA_1 \to \dots \to FA_n \to FC
@@ -220,7 +256,7 @@ $\liftA[n]\,f\,(\tpure\,x_1)\,\dots\,(\tpure\,x_n) =
 \tpure\,(f\,x_{1..n})$ corresponding to the intuition that composition
 of effect-free computations is again an effect-free computation.
 
-\subsection{Arity-generalized functors are applicative}
+\subsection{Multifunctors are applicative}
 
 Idiomatic application can be obtained as a special case of
 $\liftA[2]$:
@@ -314,9 +350,7 @@ We easily derive its laws:
 
 \end{enumerate}
 
-%% With $h
-
-\subsection{Applicative functors are arity-generalized}
+\subsection{Applicative functors are multifunctors}
 
 Following \citet{mcBridePaterson:jfp08}, the family $\liftA[n]$ can be
 defined for each applicative functor:
@@ -521,9 +555,9 @@ For the last step, we calculate
 % \end{proof*}
 
 
-\section{The development}
+%\section{The development}
 }
-\newcommand{\CONCLUSION}{%
+\DeclareRobustCommand{\CONCLUSION}{%
   Q.E.D.
   \par
   \paragraph*{Acknowledgments.}
