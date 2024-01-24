@@ -32,6 +32,8 @@
 
 \newcommand{\nextcase}{\item~}
 
+\newcommand{\ie}{i.\,e.}
+
 
 %% Macros
 \newcommand{\paradot}[1]{\paragraph*{#1.}}
@@ -87,7 +89,7 @@
 \citet{mcBridePaterson:jfp08} introduce applicative functors as a
 Haskell type constructor class $\Applicative F$ with two methods
 \[
-\begin{array}{llll}
+\begin{array}{lll@{\qquad}l}
   \tpure & : & A \to F A
     & \mbox{embedding} \\
   \_\idapp\_ & : & F\,(A \to B) \to F A \to F B
@@ -98,22 +100,40 @@ satisfying four laws:
 \[
 \begin{array}{l@{\qquad}lll}
   \ulaw{identity}
+    & \pure (\lambda x \to x) \idapp u & = & u
+\\
+  \ulaw{composition}
+    & \pure (\lambda f g x \to f\,(g\,x)) \idapp u \idapp v \idapp w
+    & = & u \idapp (v \idapp w)
+\\
+  \ulaw{interchange}
+    & \pure (\lambda f \to f x) \idapp u
+    & = & u \idapp \pure x
+    % & u \idapp \pure x
+    % & = & \pure (\lambda f \to f x) \idapp u
+\\
+  \ulaw{homomorphism}
+    & \pure (f\,x)
+    & = & \pure f \idapp \pure x
+    % & \pure f \idapp \pure x
+    % & = & \pure (f\,x)
+\\
+\end{array}
+\]
+Using the usual definitions of identity $\tid$ and composition $(\_{\circ}\_)$
+the first two laws can be presented as follows:
+% Herein, $\tid = \lambda x \to x$ is the identity function and
+% $(f \circ g)\,x = f\,(g\,x)$ unary function composition.
+\[
+\begin{array}{l@{\qquad}lll}
+  \ulaw{identity}
     & \pure \tid \idapp u & = & u
 \\
   \ulaw{composition}
     & \pure (\_{\circ}\_) \idapp u \idapp v \idapp w
     & = & u \idapp (v \idapp w)
-\\
-  \ulaw{homomorphism}
-    & \pure f \idapp \pure x & = & \pure (f\,x)
-\\
-  \ulaw{interchange}
-    & u \idapp \pure x
-    & = & \pure (\lambda f \to f x) \idapp u
 \end{array}
 \]
-Herein, $\tid = \lambda x \to x$ is the identity function and $(f \circ
-g)\,x = f\,(g\,x)$ unary function composition.
 
 Functoriality of $F$ is recovered via $\fmap f u = \pure f \idapp u$
 where \ulaw{identity} acts as the first functor law.  The second
