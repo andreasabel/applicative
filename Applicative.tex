@@ -169,8 +169,10 @@ interdefinable:
   h \idapp u         & = & \liftA[2]\,(\lambda f x \to f x)\,h\,u \\
 \end{array}
 \]
-However, to this date (2024-01-24) the documentation of
-$\tApplicative$ does not spell out the type class laws in terms of
+However, to this date (2024-01-24) the documentation\footnote{
+  \url{https://hackage.haskell.org/package/base-4.19.0.0/docs/Control-Applicative.html}
+}
+of $\tApplicative$ does not spell out the type class laws in terms of
 $\liftA[2]$.
 
 Note that $\liftA[2]$ appears to be the \emph{binary} generalization
@@ -240,7 +242,7 @@ To distinguish our concept of applicative functors from that of
   via an obvious generalization of the notion of functor.''
 }
 
-A multifunctor $F$ shall be witnessed by a family of functions
+A multifunctor $F$ shall be witnessed by a family of functions ($n \ge 0$)
 \[
   \liftA[n] :
     (A_1 \to \dots \to A_n \to C) \to FA_1 \to \dots \to FA_n \to FC
@@ -598,6 +600,8 @@ For the last step, we calculate
 %%% Local Variables:
 %%% coding: utf-8
 %%% mode: latex
-%%% TeX-engine: xetex
+%%% TeX-engine: default
 %%% TeX-master: t
 %%% End:
+
+%% ALT: TeX-engine: xetex
