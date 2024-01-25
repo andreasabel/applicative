@@ -1,8 +1,24 @@
 name: Deploy Applicative.pdf
 
 on:
-  push:         { branches: [ master ] }
-  pull_request: { branches: [ master ] }
+  push:
+    branches: [ master ]
+    paths:
+    - .github/workflows/deploy.yml
+    - Applicative.tex
+    - template.tex
+    - auto-Applicative.bib
+    - Makefile
+    - html/index.html
+  pull_request:
+    branches: [ master ]
+    paths:
+    - .github/workflows/deploy.yml
+    - Applicative.tex
+    - template.tex
+    - auto-Applicative.bib
+    - Makefile
+    - html/index.html
   workflow_dispatch:
 
 jobs:
