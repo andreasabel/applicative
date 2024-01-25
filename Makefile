@@ -17,9 +17,9 @@ bibtool=bibtool -- 'preserve.key.case = ON' \
 	  -- 'delete.field = { pdf }' \
 	  -- 'delete.field = { month }' \
 	  -- 'delete.field = { isbn }' \
+	  -- 'delete.field = { doi }' \
 	  -- 'delete.field = { note }'
 #	  -- 'delete.field = { editor }'
-#	  -- 'delete.field = { doi }' \
 
 catcfg=sed -e "s/%.*//g" <
 latex=latex
