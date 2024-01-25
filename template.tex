@@ -22,20 +22,37 @@
 % \makeatother
 
 \usepackage{ifthen}
+\usepackage{iftex}
 \usepackage{natbib}
 %\usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{cleveref}
 \usepackage{textgreek}
-\usepackage{unicode-math}
 
-% \setmainfont{XITS}
-% \setmathfont{XITS Math}
-%% tectonic needs filenames:
-\setmainfont{XITS-Regular.otf}
-\setmathfont{XITSMath-Regular.otf}
+%% Copied from agda.sty
+% https://tex.stackexchange.com/questions/47576/combining-ifxetex-and-ifluatex-with-the-logical-or-operation
+\newif\ifxetexorluatex
+\ifxetex
+  \xetexorluatextrue
+\else
+  \ifluatex
+    \xetexorluatextrue
+  \else
+    \xetexorluatexfalse
+  \fi
+\fi
+
+\ifxetexorluatex
+  \usepackage{unicode-math}
+  % \setmainfont{XITS}
+  % \setmathfont{XITS Math}
+  %% tectonic needs filenames:
+  \setmainfont{XITS-Regular.otf}
+  \setmathfont{XITSMath-Regular.otf}
+\fi
 
 %% NO AGDA CODE
 % \usepackage{latex/agda}
@@ -55,6 +72,8 @@
 \usepackage{newunicodechar}
 \newunicodechar{λ}{\ensuremath{\mathnormal\lambda}}
 \newunicodechar{ε}{\ensuremath{\mathnormal\varepsilon}}
+\newunicodechar{⊛}{\ensuremath{\circledast}}
+\newunicodechar{→}{\ensuremath{\to}}
 
 \ifdefined\heading
 \else
