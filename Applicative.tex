@@ -2,18 +2,20 @@
 
 %\RequirePackage{cleveref}
 
-\newtheorem{theorem}{Theorem}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{conjecture}[theorem]{Conjecture}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{remark}[theorem]{Remark}
-\newtheorem{example}[theorem]{Example}
-
+\DeclareRobustCommand{\THEOREMENVS}{
+  \newtheorem{theorem}{Theorem}
+  \newtheorem{proposition}[theorem]{Proposition}
+  \newtheorem{lemma}[theorem]{Lemma}
+  \newtheorem{corollary}[theorem]{Corollary}
+  \newtheorem{conjecture}[theorem]{Conjecture}
+  \newtheorem{definition}[theorem]{Definition}
+  \newtheorem{remark}[theorem]{Remark}
+  \newtheorem{example}[theorem]{Example}
+}
 \newcommand{\qed}{\ensuremath{\Box}}
 
-\newenvironment{proof}[1][]{\noindent\ifthenelse{\equal{#1}{}}{\textit{Proof.}}{\textit{Proof #1.}}\hspace{2ex}}{\qed\bigskip}
+%% DEFINED IN amsthm
+% \newenvironment{proof}[1][]{\noindent\ifthenelse{\equal{#1}{}}{\textit{Proof.}}{\textit{Proof #1.}}\hspace{2ex}}{\qed\bigskip}
 \newenvironment{proof*}[1][]{\noindent\ifthenelse{\equal{#1}{}}{\textit{Proof.}}{\textit{Proof #1.}}\hspace{2ex}}{\bigskip}
 
 % proof by cases
@@ -61,7 +63,7 @@
   % An Agda Formalization of Applicative Functors
   % Presented Via \texttt{liftA}$_n$
 }
-\DeclareRobustCommand{\DATE}{February 2022
+\DeclareRobustCommand{\DATE}{February 2022, January 2024
 %17 January 2022
 }
 \DeclareRobustCommand{\ABSTRACT}{
@@ -152,12 +154,12 @@ functor law can be derived via \ulaw{composition} and
 
 Unfortunately, \citeauthor{mcBridePaterson:jfp08}'s laws are not easy
 to remember, especially the \ulaw{composition} and \ulaw{interchange}
-laws.  The do not follow simple patterns like the functor laws which
+laws.  They do not follow simple patterns like the functor laws which
 can be seen as actions of the function category, or the monad laws,
 which can be conceived as generalization of the monoid laws.  It is
 also not intuitively clear at a glance that these laws are complete.
 
-Starting with GHC 8.2, $\tApplicative$s can also be given via
+Starting with GHC 8.2 (2017), $\tApplicative$s can also be given via
 $\liftA[2] : (A \to B \to C) \to FA \to FB \to FC$
 rather than idiomatic application, which are
 interdefinable:
@@ -167,7 +169,7 @@ interdefinable:
   h \idapp u         & = & \liftA[2]\,(\lambda f x \to f x)\,h\,u \\
 \end{array}
 \]
-However, to this date (2022-01-18) the documentation of
+However, to this date (2024-01-24) the documentation of
 $\tApplicative$ does not spell out the type class laws in terms of
 $\liftA[2]$.
 
@@ -184,7 +186,7 @@ The infinite family $\liftA[n]$ can be truncated to $n \leq 2$,
 yielding the following composition laws in addition to the functor
 laws (for $\liftA[1]$):
 \[
-\begin{array}{lll@{\qquad}l}
+\begin{array}{lll@{\quad}l}
   \liftA[1]\,f\,(\liftA[0]\,x) & = & \liftA[0]\,(f\,x) & \mbox{\ulaw{homomorphism}} \\
   \liftA[2]\,f\,(\liftA[0]\,x) & = & \liftA[1]\,(f\,x) & \mbox{\ulaw{homomorphism}} \\
   \liftA[2]\,f\,u\,(\liftA[0]\,y) & = & \liftA[1]\,(\lambda x \to f\,x\,y)\,u
@@ -194,12 +196,17 @@ laws (for $\liftA[1]$):
   \liftA[2]\,f\,u\,(\liftA[1]\,h\,v) & = & \liftA[2]\,(\lambda x \to f\,x \circ h)\,u\,v \\
   \liftA[1]\,f\,(\liftA[2]\,g\,u\,v) & = & \liftA[2]\,(\lambda x \to f \circ g\,x)\,u\,v \\
   \liftA[2]\,f\,(\liftA[2]\,g\,u\,v)\,w & = &
+    \multicolumn 2 l {
     % \liftA[3]\,(\lambda x y z \to f\,(g\,x\,y)\,z)\,u\,v\,w
-    \liftA[2]\,(\lambda x (y,z) \to f\,(g\,x\,y)\,z)\,u\,(\liftA[2]\,(\_{,}\_)\,v\,w) \\
+    \liftA[2]\,(\lambda x (y,z) \to f\,(g\,x\,y)\,z)\,u\,(\liftA[2]\,(\_{,}\_)\,v\,w)
+    } \\
   \liftA[2]\,f\,u\,(\liftA[2]\,g\,v\,w) & = &
+    %\multicolumn 2 l {
     % \liftA[3]\,(\lambda x y z \to f\,x\,(g\,y\,z))\,u\,v\,w
-    \liftA[2]\,(\lambda (x,y) \to f\,x \circ g\,y)\,(\liftA[2]\,(\_{,}\_)\,u\,v)\,w \\
-%    \liftA[2]\,(\lambda (x,y) z \to f\,x\,(g\,y\,z))\,(\liftA[2]\,(\_{,}\_)\,u\,v)\,w \\
+    \liftA[2]\,(\lambda (x,y) \to f\,x \circ g\,y)\,(\liftA[2]\,(\_{,}\_)\,u\,v)\,w
+%    \liftA[2]\,(\lambda (x,y) z \to f\,x\,(g\,y\,z))\,(\liftA[2]\,(\_{,}\_)\,u\,v)\,w
+    % }
+    \\
 \end{array}
 \]
 
@@ -579,9 +586,9 @@ For the last step, we calculate
 }
 \DeclareRobustCommand{\CONCLUSION}{%
   Q.E.D.
-  \par
-  \paragraph*{Acknowledgments.}
-  \GENERATED
+  % \par
+  % \paragraph*{Acknowledgments.}
+  % \GENERATED
 \bibliographystyle{abbrvnat}
 \bibliography{auto-Applicative}
 }

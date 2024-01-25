@@ -23,27 +23,31 @@
 
 \usepackage{ifthen}
 \usepackage{natbib}
-\usepackage{hyperref}
+%\usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{amsthm}
 \usepackage{cleveref}
 \usepackage{textgreek}
 \usepackage{unicode-math}
+
 \setmainfont{XITS}
 \setmathfont{XITS Math}
-\usepackage{latex/agda}
 
-\ifxetexorluatex
-  \renewcommand{\AgdaFontStyle}[1]{\ensuremath{\mathsf{#1}}}
-  \ifthenelse{\equal{\AgdaColourScheme}{bw}}{
-      \renewcommand{\AgdaKeywordFontStyle}[1]{\underline{#1}}
-  }{
-      \renewcommand{\AgdaKeywordFontStyle}[1]{\ensuremath{\mathsf{#1}}}
-  }
-  \renewcommand{\AgdaStringFontStyle}[1]{\ensuremath{\texttt{#1}}}
-  \renewcommand{\AgdaCommentFontStyle}[1]{\ensuremath{\texttt{#1}}}
-  \renewcommand{\AgdaBoundFontStyle}[1]{\ensuremath{\mathit{#1}}}
-\fi
+%% NO AGDA CODE
+% \usepackage{latex/agda}
+
+% \ifxetexorluatex
+%   \renewcommand{\AgdaFontStyle}[1]{\ensuremath{\mathsf{#1}}}
+%   \ifthenelse{\equal{\AgdaColourScheme}{bw}}{
+%       \renewcommand{\AgdaKeywordFontStyle}[1]{\underline{#1}}
+%   }{
+%       \renewcommand{\AgdaKeywordFontStyle}[1]{\ensuremath{\mathsf{#1}}}
+%   }
+%   \renewcommand{\AgdaStringFontStyle}[1]{\ensuremath{\texttt{#1}}}
+%   \renewcommand{\AgdaCommentFontStyle}[1]{\ensuremath{\texttt{#1}}}
+%   \renewcommand{\AgdaBoundFontStyle}[1]{\ensuremath{\mathit{#1}}}
+% \fi
 
 \usepackage{newunicodechar}
 \newunicodechar{λ}{\ensuremath{\mathnormal\lambda}}
@@ -61,6 +65,8 @@
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{1ex}
+
+\ifdefined\THEOREMENVS\THEOREMENVS\fi
 
 \ifdefined\TITLE\title{\TITLE}\fi
 
