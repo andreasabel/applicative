@@ -31,18 +31,28 @@ files=Makefile \
   latex/agda.sty \
   latex/Applicative.tex
 
-.PHONY : default add all pack ship debugMake html
-
 .PRECIOUS : %.pdf %.tex # %.dvi %.ps %.gz
 
-default : Applicative.pdf # Applicative.pdf # cr-sk.pdf #
+.PHONY: html
+html: html/index.html html/Applicative.pdf
 
+html/Applicative.pdf : Applicative.tex template.tex
+	tectonic -o html/ $<
+
+# html/index.html: index.md
+# 	pandoc --from=markdown --to=html5 --standalone --output=$@ $<
+
+.PHONY: default
+default : Applicative.pdf
+
+.PHONY: ship-Applicative
 ship-Applicative : $(destdir)/agda/Applicative.pdf
 
 # The generic rule does somehow not work
 .PHONY: ship-%
 ship-% : $(destdir)/agda/%.pdf
 
+.PHONY: pack
 pack : Applicative.zip
 
 Applicative.zip : Applicative.pdf $(files) Applicative.bbl auto-Applicative.bib
@@ -63,7 +73,7 @@ latex/%.tex : %.lagda.tex
 
 # initially, run latex once to create an .aux file
 # mark .aux file as fresh by creating a stamp _aux
-Applicative_aux : Applicative.tex template.tex latex/Applicative.tex
+Applicative_aux : Applicative.tex template.tex # latex/Applicative.tex
 	-$(pdflatex) $<;
 	touch $@;
 
