@@ -64,6 +64,18 @@ Applicative.zip : Applicative.pdf $(files) Applicative.bbl auto-Applicative.bib
 latex/%.tex : %.lagda.tex
 	agda --latex $<
 
+# arXiv
+##################################################################
+
+.PHONY: arxiv
+arxiv: arXiv.zip
+
+arXiv.zip : main.tex auto-main.bib main.bbl
+	zip $@ $^
+
+main.tex : Applicative.tex template.tex
+	sed '/input{template}/Q' Applicative.tex > $@
+	cat template.tex >> $@
 
 # Applicative
 ##################################################################
@@ -102,6 +114,12 @@ endif
 endif
 
 # Templates for the LaTeX build
+
+# initially, run latex once to create an .aux file
+# mark .aux file as fresh by creating a stamp _aux
+%_aux : %.tex
+	-$(pdflatex) $<;
+	touch $@;
 
 # then, run bibtex
 %.bbl : %_aux auto-%.bib

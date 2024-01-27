@@ -1,0 +1,14 @@
+McBride and Paterson introduced Applicative functors to Haskell,
+which are equivalent to the lax monoidal functors (with strength) of category theory.
+Applicative functors F are presented via idiomatic application
+$\_\circledast\_ : F (A \to B) \to F A \to F B$ and laws that are a bit hard to remember.
+
+Capriotti and Kaposi observed that applicative functors
+can be conceived as multifunctors, i.e., by a family
+liftA$_n$ : $(A_1 \to ... \to A_n \to C) \to F A_1 \to ... \to F A_n \to F C$
+of zipWith-like functions that generalize pure $(n=0)$, fmap $(n=1)$ and liftA2 $(n=2)$.
+This reduces the associated laws to just the first functor law
+and a uniform scheme of second (multi)functor laws, i.e., a composition law for liftA.
+
+In this note, we rigorously prove that applicative functors are
+in fact equivalent to multifunctors, by interderiving their laws.
